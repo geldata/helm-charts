@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gel-server.fullname" . }}
+  labels:
+    {{- include "gel-server.labels" . | nindent 4 }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml .Values.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+    {{- if eq .Values.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "gel-server.selectorLabels" . | nindent 6 }}
+      {{- with .Values.labels }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "gel-server.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "gel-server.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.config.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: GEL_SERVER_LOG_LEVEL
+              value: {{ .Values.config.logLevel | quote }}
+            - name: GEL_SERVER_INSTANCE_NAME
+              value: "{{ .Values.config.instanceName | default (include "gel-server.fullname" .) }}"
+            - name: GEL_SERVER_PORT
+              value: "{{ .Values.service.port }}"
+            {{- if .Values.config.security.mode }}
+            - name: GEL_SERVER_SECURITY
+              value: {{ .Values.config.security.mode | quote }}
+            {{- end }}
+
+            {{- if .Values.config.security.tls.certMode }}
+            - name: GEL_SERVER_TLS_CERT_MODE
+              value: {{ .Values.config.security.tls.certMode | quote }}
+            {{- end }}
+
+            {{- if .Values.config.security.tls.certFile }}
+            - name: GEL_SERVER_TLS_CERT_FILE
+              value: {{ .Values.config.security.tls.certFile | quote }}
+            {{- end }}
+
+            {{- if .Values.config.security.tls.keyFile }}
+            - name: GEL_SERVER_TLS_KEY_FILE
+              value: {{ .Values.config.security.tls.keyFile | quote }}
+            {{- end }}
+
+            {{- if .Values.config.security.tls.existingSecret }}
+            - name: GEL_SERVER_TLS_CERT_FILE
+              value: "/tls/tls.crt"
+            - name: GEL_SERVER_TLS_KEY_FILE
+              value: "/tls/tls.key"
+            {{- end }}
+            {{- range $key, $value := .Values.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- range .Values.extraEnvFromSecrets }}
+          envFrom:
+            - secretRef:
+                name: {{ .name }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.config.security.tls.existingSecret .Values.volumeMounts }}
+          volumeMounts:
+            {{- if .Values.config.security.tls.existingSecret }}
+            - name: tls
+              mountPath: /tls
+              readOnly: true
+            {{- end }}
+
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 2 }}
+            {{- end }}
+          {{- end }}
+      {{- if or .Values.config.security.tls.existingSecret .Values.volumeMounts }}
+      volumes:
+      {{- if .Values.config.security.tls.existingSecret }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.config.security.tls.existingSecret }}
+      {{- end }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

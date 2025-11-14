@@ -1,0 +1,3 @@
+{{- if and (eq .Values.config.security.tls.certMode "require_file") (not .Values.config.security.tls.existingSecret) (or (not .Values.config.security.tls.certFile) (not .Values.config.security.tls.keyFile)) }}
+WARNING: TLS mode is require_file but no cert/key were provided. The server will fail to start.
+{{- end }}

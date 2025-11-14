@@ -1,0 +1,103 @@
+# Default values for gel-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: "geldata/gel"
+  pullPolicy: IfNotPresent
+  tag: "7.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+strategy:
+  type: "RollingUpdate"
+  rollingUpdate:
+    maxSurge: "100%"
+    maxUnavailable: 0
+
+labels: {}
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+config:
+  logLevel: "info"
+  security:
+    mode: ""              # options: "", insecure_dev_mode
+    tls:
+      certMode: ""        # options: "", require_file, generate_self_signed
+      certFile: ""        # string: path to cert
+      keyFile: ""         # string: path to key
+      existingSecret: "gel-tls-cert"  # name of secret containing tls.crt / tls.key
+
+extraEnv: {}
+  # GEL_SERVER_ADMIN_UI: "enabled"
+  # GEL_DEBUG_HTTP_INJECT_CORS: 1
+
+# extraEnvFromSecrets:
+#   - name: gel-db-creds
+#   - name: gel-server-password
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /server/status/alive
+    port: http
+readinessProbe:
+  httpGet:
+    path: /server/status/ready
+    port: http
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+  imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 5656
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    # - host: gel.local
+    #   paths:
+    #     - path: /
+    #       pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: gel-tls
+  #    hosts:
+  #      - gel.local
