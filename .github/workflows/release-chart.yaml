@@ -10,9 +10,9 @@ on:
       - main
 
 jobs:
-  release:
+  validate:
     permissions:
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,26 +26,30 @@ jobs:
           version: v3.19.0
       
       - name: Lint Helm chart
-        run: helm lint .
+        run: helm lint charts/**
 
       - name: Validate chart
         run: |
-          helm template . --debug --dry-run
+          helm template charts/** --debug --dry-run
           echo "Chart validation successful"
-
-      - name: Package Helm chart
-        run: helm package .
+  release:
+    if: github.ref == 'refs/heads/main'
+    needs: validate
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Configure Git
-        if: github.ref == 'refs/heads/main'
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        if: github.ref == 'refs/heads/main'
         uses: helm/chart-releaser-action@v1.7.0
-        with:
-          charts_dir: .
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
