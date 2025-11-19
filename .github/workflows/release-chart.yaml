@@ -32,6 +32,7 @@ jobs:
         run: |
           helm template charts/** --debug --dry-run
           echo "Chart validation successful"
+          
   release:
     if: github.ref == 'refs/heads/main'
     needs: validate

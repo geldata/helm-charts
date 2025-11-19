@@ -30,13 +30,13 @@ securityContext: {}
 
 config:
   logLevel: "info"
-  security:
-    mode: ""              # options: "", insecure_dev_mode
-    tls:
-      certMode: ""        # options: "", require_file, generate_self_signed
-      certFile: ""        # string: path to cert
-      keyFile: ""         # string: path to key
-      existingSecret: "gel-tls-cert"  # name of secret containing tls.crt / tls.key
+  # security:
+    # mode: ""              # options: "", insecure_dev_mode
+    # tls:
+      # certMode: ""        # options: "", require_file, generate_self_signed
+      # certFile: ""        # string: path to cert
+      # keyFile: ""         # string: path to key
+      # existingSecret: "gel-tls-cert"  # name of secret containing tls.crt / tls.key
 
 extraEnv: {}
   # GEL_SERVER_ADMIN_UI: "enabled"
