@@ -15,8 +15,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: gel
       protocol: TCP
-      name: http
+      name: gel
   selector:
     {{- include "gel-server.selectorLabels" . | nindent 4 }}

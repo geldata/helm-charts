@@ -70,7 +70,6 @@ spec:
             - name: GEL_SERVER_SECURITY
               value: {{ .Values.config.security.mode | quote }}
             {{- end }}
-
             {{- if .Values.config.security.tls.certMode }}
             - name: GEL_SERVER_TLS_CERT_MODE
               value: {{ .Values.config.security.tls.certMode | quote }}
@@ -115,6 +114,8 @@ spec:
           {{- end }}
           {{- if or .Values.config.security.tls.existingSecret .Values.volumeMounts }}
           volumeMounts:
+            - name: gel-data
+              mountPath: /var/lib/gel/data
             {{- if .Values.config.security.tls.existingSecret }}
             - name: tls
               mountPath: /tls
@@ -127,11 +128,21 @@ spec:
           {{- end }}
       {{- if or .Values.config.security.tls.existingSecret .Values.volumeMounts }}
       volumes:
-      {{- if .Values.config.security.tls.existingSecret }}
+        - name: gel-data
+        {{- if .Values.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim }}
+        {{- else if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "gel-server.fullname" . }}-data
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+        {{- if .Values.config.security.tls.existingSecret }}
         - name: tls
           secret:
             secretName: {{ .Values.config.security.tls.existingSecret }}
-      {{- end }}
+        {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

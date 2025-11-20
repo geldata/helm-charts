@@ -29,17 +29,17 @@ podSecurityContext: {}
 securityContext: {}
 
 config:
-  logLevel: "info"
-  # security:
-    # mode: ""              # options: "", insecure_dev_mode
-    # tls:
-      # certMode: ""        # options: "", require_file, generate_self_signed
-      # certFile: ""        # string: path to cert
-      # keyFile: ""         # string: path to key
+  logLevel: "info"          # options: "debug", "info", "warn", "error", "silent" ref: https://docs.geldata.com/reference/running/configuration#gel-server-log-level
+  security:
+    # mode: ""              # options: "", "insecure_dev_mode" ref: https://docs.geldata.com/reference/running/configuration#gel-server-security
+    tls: {}
+      # certMode: ""        # options: "", require_file, generate_self_signed ref: https://docs.geldata.com/reference/running/configuration#gel-server-tls-cert-mode-file-env
+      # certFile: ""        # string: path to cert ref: https://docs.geldata.com/reference/running/configuration#gel-server-tls-cert-file
+      # keyFile: ""         # string: path to key ref: https://docs.geldata.com/reference/running/configuration#gel-server-tls-key-file
       # existingSecret: "gel-tls-cert"  # name of secret containing tls.crt / tls.key
 
 extraEnv: {}
-  # GEL_SERVER_ADMIN_UI: "enabled"
+  # GEL_DOCKER_LOG_LEVEL: "enabled"
   # GEL_DEBUG_HTTP_INJECT_CORS: 1
 
 # extraEnvFromSecrets:
@@ -80,6 +80,7 @@ affinity: {}
 serviceAccount:
   create: false
   automount: true
+  labels: {}
   annotations: {}
   name: ""
   imagePullSecrets: []
@@ -87,17 +88,18 @@ serviceAccount:
 service:
   type: ClusterIP
   port: 5656
-
-ingress:
-  enabled: false
-  className: ""
+  labels: {}
   annotations: {}
-  hosts:
-    # - host: gel.local
-    #   paths:
-    #     - path: /
-    #       pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: gel-tls
-  #    hosts:
-  #      - gel.local
+
+persistence:
+  enabled: true
+
+  # When empty, default StorageClass is used
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+  # If you want to use an existing PVC
+  existingClaim: ""
+  labels: {}
+  annotations: {}
