@@ -9,4 +9,3 @@ A collection of Helm charts for deploying the Gel Server (formerly EdgeDB) ecosy
 ## 🚀 What’s included
 
 - [`gel-server`](./charts/gel-server/README.md) — Helm chart to deploy a Gel Server instance, backed by PostgreSQL (external)
-- (Future) Additional charts may include monitoring, backup, tooling integrations, etc.
