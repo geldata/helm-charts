@@ -117,6 +117,7 @@ spec:
           volumeMounts:
             - name: gel-data
               mountPath: /var/lib/gel/data
+              subPath: db
             {{- if .Values.config.security.tls.existingSecret }}
             - name: tls
               mountPath: /tls
