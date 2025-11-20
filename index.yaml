@@ -3,6 +3,16 @@ entries:
   gel-server:
   - apiVersion: v2
     appVersion: "7.0"
+    created: "2025-11-20T20:26:46.814907687Z"
+    description: A Helm chart for running gel-server on Kubernetes
+    digest: 4ad69abf832e1e3ce47343ccc6e56e07152a9bdc9e51915bc9afda6502855845
+    name: gel-server
+    type: application
+    urls:
+    - https://github.com/geldata/helm-charts/releases/download/gel-server-0.2.2/gel-server-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: "7.0"
     created: "2025-11-20T19:24:08.58488533Z"
     description: A Helm chart for running gel-server on Kubernetes
     digest: 57e678eb0738f97fa6aa162712969f051ed647adbca7da95453e62cb125e1d66
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/geldata/helm-charts/releases/download/gel-server-0.1.0/gel-server-0.1.0.tgz
     version: 0.1.0
-generated: "2025-11-20T19:24:08.584892885Z"
+generated: "2025-11-20T20:26:46.814921984Z"
