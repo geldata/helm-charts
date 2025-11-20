@@ -39,8 +39,8 @@ config:
       # existingSecret: "gel-tls-cert"  # name of secret containing tls.crt / tls.key
 
 extraEnv: {}
-  # GEL_DOCKER_LOG_LEVEL: "enabled"
-  # GEL_DEBUG_HTTP_INJECT_CORS: 1
+  # Full list of environment variables: https://docs.geldata.com/reference/running/configuration
+  # GEL_DOCKER_LOG_LEVEL: "info"
 
 # extraEnvFromSecrets:
 #   - name: gel-db-creds
