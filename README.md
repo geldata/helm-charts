@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-A collection of Helm charts for deploying the Gel Server (formerly EdgeDB) ecosystem on Kubernetes.
+Helm charts for deploying the Gel Server (formerly EdgeDB) ecosystem on Kubernetes.
 
 ---
 

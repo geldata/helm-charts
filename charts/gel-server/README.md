@@ -1,8 +1,8 @@
-# helm-gel-server
+# Gel Server Helm Chart
 
 A Helm chart for deploying gel-server on kubernetes with an external PostgreSQL server
 
-- [helm-gel-server](#helm-gel-server)
+  - [Quick Start](#quick-start)
   - [Get Helm Repository Info](#get-helm-repository-info)
   - [Install Helm Chart](#install-helm-chart)
   - [Uninstall Helm Chart](#uninstall-helm-chart)
@@ -15,6 +15,53 @@ A Helm chart for deploying gel-server on kubernetes with an external PostgreSQL 
   - [Connecting via `gel` CLI](#connecting-via-gel-cli)
     - [Automatically Generated TLS Certificates](#automatically-generated-tls-certificates)
     - [Self-Provided TLS Certificates](#self-provided-tls-certificates)
+
+## Quick Start
+
+1. **Create the database connection secret:**
+
+```console
+  kubectl create secret generic gel-db-creds \
+    --from-literal=GEL_SERVER_BACKEND_DSN='postgresql://user:pass@postgres.example.com:5432/geldb' \
+    -n gel
+```
+
+2. **Create the server password secret:**
+
+```console
+  kubectl create secret generic gel-server-password \
+    --from-literal=GEL_SERVER_PASSWORD='your-secure-password' \
+    -n gel
+```
+
+3. **Create a values.yaml file:**
+
+```yaml
+  extraEnvFromSecrets:
+    - name: gel-db-creds
+    - name: gel-server-password
+   
+  config:
+    logLevel: "info"
+   
+  service:
+    type: LoadBalancer
+```
+
+4. **Install the chart:**
+
+```console
+  helm install my-gel-server gel/gel-server \
+    -f values.yaml \
+    -n gel \
+    --create-namespace
+```
+
+5. **Get the service endpoint:**
+
+```console
+  kubectl get svc -n gel
+```
 
 ## Get Helm Repository Info
 
